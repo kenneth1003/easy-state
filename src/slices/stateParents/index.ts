@@ -6,10 +6,11 @@ import { RootState } from '@/store'
 
 enum StateParentType {}
 
-type StateParent = {
+export type StateParent = {
   stateParentId: string;
   title: string;
   order: number;
+  states: string[];
   type?: StateParentType;
 }
 
@@ -26,7 +27,9 @@ const stateParentsSlice = createSlice({
   reducers: {
     // Can pass adapter functions directly as case reducers.  Because we're passing this
     // as a value, `createSlice` will auto-generate the `bookAdded` action type / creator
+    stateParentUpdated: stateParentsAdapter.updateOne,
     stateParentAdded: stateParentsAdapter.addOne,
+    stateParentRemoveOne: stateParentsAdapter.removeOne,
     stateParentsReceived(state, action) {
       // Or, call them as "mutating" helpers in a case reducer
       return stateParentsAdapter.setAll(state, action.payload.stateParents)
@@ -35,12 +38,18 @@ const stateParentsSlice = createSlice({
 })
 
 
-// const simpleSelectors = stateParentsAdapter.getSelectors()
+
+
 export const stateParentSelector = stateParentsAdapter.getSelectors<RootState>((state: RootState) => {
   return state.stateParents
 })
 
 
-export const { stateParentAdded, stateParentsReceived } = stateParentsSlice.actions
+export const {
+  stateParentAdded,
+  stateParentUpdated,
+  stateParentRemoveOne,
+  stateParentsReceived
+} = stateParentsSlice.actions
 export default stateParentsSlice.reducer
 
