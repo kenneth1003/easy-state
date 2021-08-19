@@ -243,7 +243,7 @@ export const genCode2 = (stateParents: StateParent[], selectMap: Record<string, 
       let curObj: any = obj
       const args = stateTitles.map((stateTitle, i) => {
         const [title, state] = stateTitle.split(TITLE_SEPARATOR)
-        const key = `${transformTitleToExp(title)}.${camelCase(state)}`
+        const key = `[${transformTitleToExp(title)}.${camelCase(state)}]`
         if (!isAccessorSet) {
           accessor += `[${camelCase(title)}]`
         }
@@ -273,9 +273,14 @@ export const genCode2 = (stateParents: StateParent[], selectMap: Record<string, 
       variableDeclare.push('}')
     })
     variableDeclare.push('')
+
+    const stateMap = JSON.stringify(obj, null, INDENT_SIZE)
+      .replace(/"\[/g, '[')
+      .replace(/]"/g, ']')
+
     code = [
       ...variableDeclare,
-      `const ${STATE_MAP_NAME} = ${JSON.stringify(obj, null, INDENT_SIZE)}`,
+      `const ${STATE_MAP_NAME} = ${stateMap}`,
       '',
       `const ${OUTPUT_HANDLING} = output => output`,
       '',

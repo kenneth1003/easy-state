@@ -17,7 +17,7 @@ export const ItemWrap = styled.div`
   margin-bottom: 24px;
 `;
 
-export const ItemTitle = styled.h3`
+export const ItemTitle = styled.div`
   color: ${consumeTheme('textMain')};
   font-size: 18px;
   font-weight: bold;
@@ -33,7 +33,7 @@ export const ItemTitle = styled.h3`
   input {
     font-size: 18px;
     font-weight: bold;
-    background-color: rgb(30, 31, 38);
+    background-color: rgba(0,0,0,0);
     border: none;
     color: #fff;
     &:focus {

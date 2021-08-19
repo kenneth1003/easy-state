@@ -7,14 +7,22 @@ import PermListItem from '@/components/PermListItem';
 import { ItemTitle } from '@/components/BlockInfo';
 import { genPermListFromStateParents, hashKey } from '@/core';
 import CodeModal from '../CodeModal';
+import { Button } from '@/components';
 
 const Wrap = styled.div`
   padding: 16px;
 `
 
+enum UIMode {
+  Code,
+  Combination
+}
+
 const Canvas = () => {
   const allStateParent = useSelector(stateParentSelector.selectAll);
   const allStateOutput = useSelector(stateOutputSelector.selectAll);
+
+  const [uiMode, setUIMode] = useState<UIMode | undefined>(undefined);
   const [selectMap, setSelectMap] = useState<Record<string, string>>({});
   const [allCombs, setAllCombs] = useState<string[][]>([]);
 
@@ -31,30 +39,44 @@ const Canvas = () => {
 
   return (
     <Wrap>
-      <CodeModal
-        selectMap={selectMap}
-      />
-      <ItemTitle>
-        All Combinations: { allCombs.length }
-      </ItemTitle>
+      <Button active={uiMode === UIMode.Code} onClick={() => setUIMode(UIMode.Code)}>Generated Code</Button>
+      <Button active={uiMode === UIMode.Combination} onClick={() => setUIMode(UIMode.Combination)}>Edit Combination</Button>
+
       {
-        allCombs.map((comb, idx) => (
-          <PermListItem
-            nth={idx + 1}
-            tags={comb}
+        uiMode === UIMode.Code
+          ? <CodeModal
             selectMap={selectMap}
-            selectList={
-              allStateOutput.map(({ title }) => title)
-            }
-            onSelect={(key: string, value: string) => {
-              setSelectMap({
-                ...selectMap,
-                [key]: value
-              })
-            }}
           />
-        ))
+          : null
       }
+      {
+        uiMode === UIMode.Combination
+        ? <>
+          <ItemTitle>
+            All Combinations: { allCombs.length }
+          </ItemTitle>
+          {
+            allCombs.map((comb, idx) => (
+              <PermListItem
+                nth={idx + 1}
+                tags={comb}
+                selectMap={selectMap}
+                selectList={
+                  allStateOutput.map(({ title }) => title)
+                }
+                onSelect={(key: string, value: string) => {
+                  setSelectMap({
+                    ...selectMap,
+                    [key]: value
+                  })
+                }}
+              />
+            ))
+          }
+        </>
+        : null
+      }
+      
     </Wrap>
   );
 };

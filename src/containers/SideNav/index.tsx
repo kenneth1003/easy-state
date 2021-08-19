@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   stateParentAdded,
@@ -11,7 +11,7 @@ import { useCallback, useState } from 'react';
 import { genStateParentId } from '@/utils';
 import { ListItemType } from '@/components/ListItem';
 import Tag from '@/components/Tag';
-import { ItemTitle } from '@/components/BlockInfo';
+import { ItemTitle as RawItemTitle } from '@/components/BlockInfo';
 
 import {TextInput, Button, ListItem} from '@/components';
 import { RootState } from '@/store';
@@ -20,10 +20,45 @@ const Wrap = styled.div`
   padding: 16px;
 `
 
-const StateParentWrap = styled.div<{ active: boolean }>`
-  border-left: ${({ active, theme }) => active ? '3px solid #fff' : ''};
-  padding: ${({ active }) => active ? '8px' : ''};
+const ItemTitle = styled(RawItemTitle)`
+  &:hover {
+    color: #fff;
+  }
 `
+
+const StateParentWrap = styled.div<{ active: boolean }>`
+  cursor: pointer;
+  margin: 12px 0;
+  padding: 8px 0;
+  padding-left: 8px;
+  border-radius: 2px;
+  background-color: ${({ active, theme }) => active ? 'rgba(255,255,255,.1) !important' : ''};
+  padding: ${({ active, theme }) => active ? '8px' : ''};
+  transition: all .05s;
+  will-change: auto;
+  &:hover {
+    background-color: rgba(255,255,255,.05);
+    /* padding: 8px 12px; */
+  }
+`
+
+const cursorAnimation = keyframes`
+ 0% { opacity: 0}
+ 40% { opacity: 0}
+ 60% {opacity: 1}
+ 100% { opacity: 1}
+`
+
+const Cursor = styled.span`
+  width: 2px;
+  margin-left: 1px;
+  height: 18px;
+  background-color: #aaa;
+  position: relative;
+  top: 2px;
+  display: inline-block;
+  animation: ${cursorAnimation} 1.3s infinite;
+`;
 
 const InputForm = styled.div`
   display: flex;
@@ -46,6 +81,7 @@ const DEFAULT_INPUT_MODE = InputMode.StateParentAdd
 const SideNav = () => {
   const [inputMode, setInputMode] = useState(InputMode.StateParentAdd)
   const [activeStateParentIdx, setActiveStateParentIdx] = useState(0);
+  const [isInputFocus, setIsInputFocus] = useState(false);
   const [inputText, setInputText] = useState('')
   const dispatch = useDispatch()
   const allStateParent = useSelector(stateParentSelector.selectAll);
@@ -133,9 +169,7 @@ const SideNav = () => {
   }, [dispatch])
 
   const submit = useCallback(() => {
-    console.log('inputText:', inputText);
     if (!inputText) return
-    console.log('inputMode:', inputMode);
 
     if (inputMode === InputMode.StateParentAdd) {
       addStateParent()
@@ -149,14 +183,21 @@ const SideNav = () => {
       {/* { inputMode } */}
       <InputForm>
         <TextInput
+          hideCursor={
+            inputMode === InputMode.StateAdd
+          }
           placeholder={
             inputMode === InputMode.StateAdd
-              ? "Add state type... ex: UserStatue, SystemStatus"
-              : "Add State... ex: Login, Not Login, Error"
+              ? `Input a state of "${allNames[activeStateParentIdx]}"`
+              : "Input a type... ex: UserStatus, PageStatus"
           }
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
+          onFocus={() => {
+            setIsInputFocus(true)
+          }}
           onBlur={() => {
+            setIsInputFocus(false)
             setInputMode(DEFAULT_INPUT_MODE)
           }}
           onKeyDown={(e) => {
@@ -168,10 +209,17 @@ const SideNav = () => {
             } else if (e.key === 'Tab') {
               e.preventDefault();
               setInputMode(InputMode.StateAdd)
-              const idx = inputMode !== InputMode.StateAdd
-                ? 0
-                : (activeStateParentIdx + 1) % allIds.length
-              setActiveStateParentIdx(idx)
+              if (inputMode !== InputMode.StateAdd) {
+                setActiveStateParentIdx(0)
+              } else {
+                if (activeStateParentIdx === allIds.length - 1) {
+                  setInputMode(DEFAULT_INPUT_MODE)
+                  setActiveStateParentIdx(0)
+                } else {
+                  setActiveStateParentIdx(activeStateParentIdx + 1)
+                }
+              }
+              
             }
           }}
           type="text"
@@ -188,22 +236,43 @@ const SideNav = () => {
           }>
             <ListItem
               title={title}
-              onDelete={ () => {
+              onDelete={ (e) => {
+                e.stopPropagation()
                 if (window.confirm('Are you sure to remove?')){
+                  setInputMode(InputMode.StateParentAdd)
                   removeStateParent(stateParentId)
                 }
               }}
+              onEndEdit={() => setInputMode(InputMode.StateParentAdd)}
+              onStartEdit={() => setInputMode(InputMode.StateParentEdit)}
               onSubmit={ (text: string) => editStateParent(stateParentId, text) }
               renderer={(title) => <ItemTitle >{title}</ItemTitle>}
             />
             <StateList>
-              {states.map((state, idx) => (
+              {
+                (
+                  inputMode === InputMode.StateAdd && activeStateParentIdx === i && isInputFocus
+                  ? [...states, 'cursor']
+                  : states 
+                ).map((state, idx) => (
                 <ListItem
+                  isSolidDelete
                   type={ListItemType.SubListItem}
                   title={ state }
-                  onDelete={ () => removeState(stateParentId, idx) }
+                  onDelete={ (e) => {
+                    e.stopPropagation()
+                    removeState(stateParentId, idx)
+                  }}
+                  onEndEdit={() => setInputMode(InputMode.StateParentAdd)}
+                  onStartEdit={() => setInputMode(InputMode.StateEdit)}
                   onSubmit={ (text: string) => editState(stateParentId, idx, text) }
-                  renderer={(title) => <Tag style={{ marginRight: 8, marginBottom: 8 }}>{title}</Tag>}
+                  renderer={(title) =>
+                    state === 'cursor'
+                      ? <>
+                        { inputText }<Cursor />
+                      </>
+                      : <Tag style={{ marginRight: 8, marginBottom: 8 }}>{title}</Tag>
+                }
                 />
               ))}
             </StateList>

@@ -62,9 +62,16 @@ const CodeModal = ({
     ? pruneSelectMap(selectMap).selectMap
     : selectMap
 
-  const testCases = genTestCase(selectMap);
+  // const testCases = genTestCase(selectMap);
   // const node = genOptimizeTree(allStateParent, finalSelectMap)
   const code = genCode2(allStateParent, selectMap);
+
+  useEffect(() => {
+    // import('@/third-party/prism.js')
+    const src = document.createElement('script')
+    src.setAttribute('src', 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js');
+    document.body.append(src)
+  }, [])
 
   return (
     // <Modal 
@@ -74,17 +81,21 @@ const CodeModal = ({
     //     style={{}}
     //     contentLabel="Example Modal"
     //   >
-    <>
-      <Button onClick={() => setIsPruneElse(!isPruneElse)}>
+    <div style={{ width: '100%', overflow: 'auto' }}>
+      {/* <Button onClick={() => setIsPruneElse(!isPruneElse)}>
         toggle
-      </Button>
-      <pre>
+      </Button> */}
+      <pre className="language-javascript">
+        <code>
+          {code.join('\n')}
+        </code>
+      </pre>
+      {/* <pre className="language-js" style={{ width: '100%' }}>
+        <code>
         {testCases.join('\n')}
-      </pre>
-      <pre>
-        {code.join('\n')}
-      </pre>
-    </>
+        </code>
+      </pre> */}
+    </div>
     // </Modal>
   );
 };

@@ -6,11 +6,13 @@ import {
   stateOutputRemoveOne,
   stateOutputSelector
 } from '@/slices/stateOutputs';
+
 import { useCallback, useState } from 'react';
 import { genStateParentId } from '@/utils';
 import { ItemTitle } from '@/components/BlockInfo';
 
-import {TextInput, Button, ListItem} from '@/components';
+import {TextInput, Button, ListItem, Tag} from '@/components';
+import { ListItemType } from '@/components/ListItem';
 
 const Wrap = styled.div`
   padding: 16px;
@@ -18,11 +20,22 @@ const Wrap = styled.div`
 
 const InputForm = styled.div`
   display: flex;
+  margin-bottom: 15px;
+`
+
+const OutputWrap = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  /* padding: 4px 8px;
+  border: 1px solid #555;
+  margin-bottom: 12px;
+  border-radius: 2px; */
 `
 
 const StateOutputPanel = () => {
   const [inputText, setInputText] = useState('')
   const dispatch = useDispatch()
+  
   const allStateOutputs = useSelector(stateOutputSelector.selectAll);
   const allOutputNames = allStateOutputs.map(({ title }) => title)
 
@@ -65,10 +78,8 @@ const StateOutputPanel = () => {
     <Wrap>
       {/* <ItemTitle>YTESt</ItemTitle> */}
       <InputForm>
-        <span style={{ flex: 1 }}>
-
         <TextInput
-          placeholder="Enter your password..."
+          placeholder="Enter a output..."
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           onKeyDown={(e) => {
@@ -80,30 +91,27 @@ const StateOutputPanel = () => {
           }}
           type="text"
         />
-        </span>
-        <span style={{ marginLeft: 8 }}>
-          <Button onClick={submit}>
-            OK
-          </Button>
-        </span>
       </InputForm>
 
+      <OutputWrap>
       {
         allStateOutputs.map(({ title, stateOutputId }) => (
-          <div>
             <ListItem
+              isSolidDelete
+              type={ListItemType.SubListItem}
               title={title}
-              onDelete={ () => {
+              onDelete={ (e) => {
+                e.stopPropagation()
                 if (window.confirm('Are you sure to remove?')){
                   removeStateOutput(stateOutputId)
                 }
               }}
               onSubmit={ (text: string) => editStateOutput(stateOutputId, text) }
-              renderer={(title) => <ItemTitle>{ title }</ItemTitle>}
+              renderer={(title) => <Tag style={{ marginRight: 8, marginBottom: 8 }}>{ title }</Tag>}
             />
-          </div>
         ))
       }      
+      </OutputWrap>
     </Wrap>
   );
 };

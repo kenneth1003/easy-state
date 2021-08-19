@@ -8,8 +8,11 @@ const Wrap = styled.button<Props>`
   padding: 8px;
   outline: none;
   border-radius: 2px;
+  color: ${({ active, theme }) => active ? theme.main : ''};
+  font-weight: ${({ active, theme }) => active ? 'bold' : ''};
   &:hover {
     cursor: pointer;
+    color: ${consumeTheme('main')};
   }
 `
 
@@ -18,15 +21,18 @@ const Wrap = styled.button<Props>`
 interface Props extends React.ComponentPropsWithoutRef<'button'> {
   onClick: (...args: any[]) => any
   children: React.ReactNode
+  active?: boolean
 }
 
 const Button = ({
   onClick,
-  children
+  children,
+  active
 }: Props) => {
   return (
     <Wrap
       onClick={onClick}
+      active={active}
     >
       { children }
     </Wrap>

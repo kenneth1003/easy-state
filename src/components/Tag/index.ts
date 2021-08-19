@@ -14,7 +14,6 @@ const base = css`
   letter-spacing: 1px;
   font-size: 13px;
   border-radius: 3px;
-  transition: all .5s;
 `;
 
 // const normal = css`
@@ -28,7 +27,7 @@ const solidMixin = css`
 
   input {
     display: block;
-    width: 320px;
+    /* width: 320px; */
     font-weight: bold;
     padding: 2px 4px;
     letter-spacing: 1px;
