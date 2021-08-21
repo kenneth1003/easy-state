@@ -3,18 +3,56 @@ import { useSelector } from 'react-redux';
 import Canvas from '@/containers/Canvas';
 import OutputPanel from '@/containers/OutputPanel';
 import SideNav from '@/containers/SideNav';
-import CodeModal from '@/containers/CodeModal';
 import { stateParentSelector } from '@/slices/stateParents';
 import {
   stateOutputSelector
 } from '@/slices/stateOutputs';
+import { Link } from 'react-router-dom';
+
+const SEOH1 = styled.h1`
+  font-size: 20px;
+`
+
+const SEOH2 = styled.h2`
+  display: inline;
+  font-weight: normal;
+  font-size: 14px;
+`;
+
+const DescBlock = styled.div`
+  padding: 0 8px;
+  font-size: 14px;
+`
+
+const Description = styled.p`
+  line-height: 1.5;
+  a {
+    color: #ccc;
+    text-decoration: none;
+    border-bottom: 1px dotted #aaa;
+  }
+`
+
+const StepList = styled.ol`
+  margin: 8px 0;
+  padding-left: 18px;
+  li {
+    line-height: 1.5;
+  }
+`
+
+// const 
+
+const MainWrap = styled.div`
+  /* position: relative; */
+  min-height: 600px;
+  max-width: 1120px;
+  margin: 0 auto;
+`
 
 const Wrap = styled.div`
   /* position: relative; */
   display: flex;
-  min-height: 600px;
-  max-width: 1080px;
-  margin: 0 auto;
 `
 
 const MainContent = styled.div`
@@ -29,11 +67,10 @@ const Side = styled.div`
   flex-basis: 320px;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 46px);
+  /* height: calc(100vh - 60px); */
 `
 
 const SideContent = styled.div`
-  flex: 1;
   background-color: rgb(30, 31, 38);
   border-radius: 2px;
   margin: 16px 0 ;
@@ -41,7 +78,7 @@ const SideContent = styled.div`
 
 const SideSubContent = styled.div`
   flex-shrink: 0;
-  flex-basis: 100px;
+  flex-basis: 120px;
   background-color: rgb(30, 31, 38);
   border-radius: 2px;
 `
@@ -55,24 +92,35 @@ const Home = () => {
   const isHasStateOutput = allStateOutput.length;
 
   return (
-    <Wrap>
-      <Side>
-        <SideContent>
-          <SideNav />
-        </SideContent>
-        {
-          isHasStateParentValue && <SideSubContent>
+    <MainWrap>
+      <DescBlock>
+        <Description>
+          <Link to="/about">About Page</Link>
+          <SEOH1>A tool to create state mapping JS code</SEOH1>
+          The generated code is based on the concept of <SEOH2><a href="https://refactoring.guru/design-patterns/state" target="_blank" rel="noreferrer">state pattern</a></SEOH2> and <SEOH2><a href="https://stackoverflow.com/questions/105311/what-are-table-driven-methods" target="_blank" rel="noreferrer">table driven methods</a></SEOH2>. The only steps:
+        </Description>
+        {/* <span>Steps:</span> */}
+        <StepList>
+          <li>Input possible states and outputs</li>
+          <li>Generate Code</li>
+        </StepList>
+      </DescBlock>
+      <Wrap>
+        <Side>
+          <SideContent>
+            <SideNav />
+          </SideContent>
+          <SideSubContent>
             <OutputPanel />
           </SideSubContent>
-        }
-
-      </Side>
-      <MainContent>
-        {
-          (isHasStateOutput && isHasStateParentValue) ? <Canvas /> : null
-        }
-      </MainContent>
-    </Wrap>
+        </Side>
+        <MainContent>
+          {
+            (isHasStateOutput && isHasStateParentValue) ? <Canvas /> : null
+          }
+        </MainContent>
+      </Wrap>
+    </MainWrap>
   )
 }
 

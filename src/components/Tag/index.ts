@@ -14,6 +14,9 @@ const base = css`
   letter-spacing: 1px;
   font-size: 13px;
   border-radius: 3px;
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 // const normal = css`

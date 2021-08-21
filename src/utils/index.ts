@@ -19,3 +19,6 @@ export const genStateOutputId = () => {
   return id.toString();
 }
 
+const format = /[`!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/;
+
+export const isContainSpecialChar = (text: string) => format.test(text)

@@ -1,7 +1,6 @@
 import { StateParent } from '@/slices/stateParents';
 import sortBy from 'lodash/sortBy';
 import union from 'lodash/union';
-import uniq from 'lodash/uniq';
 import camelCase from 'lodash/camelCase';
 import upperFirst from 'lodash/upperFirst';
 
@@ -66,15 +65,6 @@ const permListRecur = (
   }
 }
 
-function* idDispatcher() {
-  let i = 0;
-  while (true) {
-    yield ++i;
-  }
-}
-
-const ite = idDispatcher()
-
 /* TODO */
 const permTreeRecur = (
   states2D: string[][],
@@ -137,7 +127,6 @@ export const genPermListFromStateParents = (stateParents: StateParent[]) => {
 }
 
 const filterState2DBySelectMap = (states2D: string[][], selectMap: Record<string, string>) => {
-  const rtn = []
   states2D.forEach((states) => {
     // console.log(states);
   })
@@ -198,8 +187,6 @@ export const genOptimizeTree = (
 }
 
 const INDENT_SIZE = 2;
-const IF_SEPARATOR = "IF##"
-const OUTPUT_SEPARATOR = "O##"
 const OUTPUT_HANDLING = 'outputHandler'
 const STATE_HANDLER = 'stateHandler';
 const STATE_MAP_NAME = 'StateMap';
@@ -241,7 +228,7 @@ export const genCode2 = (stateParents: StateParent[], selectMap: Record<string, 
       const stateTitles = key.split(':')
       const output = selectMap[key]
       let curObj: any = obj
-      const args = stateTitles.map((stateTitle, i) => {
+      stateTitles.forEach((stateTitle, i) => {
         const [title, state] = stateTitle.split(TITLE_SEPARATOR)
         const key = `[${transformTitleToExp(title)}.${camelCase(state)}]`
         if (!isAccessorSet) {
@@ -263,12 +250,12 @@ export const genCode2 = (stateParents: StateParent[], selectMap: Record<string, 
 
     const variableDeclare = []
     const args: string[] = []
-    stateParents.map(({ title, states }) => {
+    stateParents.forEach(({ title, states }) => {
       const transformedTitle = transformTitleToExp(title)
       variableDeclare.push(`const ${transformedTitle} = {`)
       args.push(stateTitleToVariable(title))
-      states.forEach((state) => {
-        variableDeclare.push(`${createSpace(INDENT_SIZE)}${camelCase(state)}: "${state}"`)
+      states.forEach((state, i) => {
+        variableDeclare.push(`${createSpace(INDENT_SIZE)}${camelCase(state)}: "${state}"${states.length - 1 === i ? '' : ','}`)
       })
       variableDeclare.push('}')
     })
@@ -352,7 +339,6 @@ export const genCode = (
   const skipped = new Array(sorted.length).fill(false);
   const reverseMap: Record<string, string[]> = {}
 
-  let currentOutput = hashKey(sorted[0].outputs)
   for (let i = 0; i < sorted.length; i++) {
     const child = sorted[i]
     const key = hashKey(child.outputs)
@@ -406,7 +392,7 @@ export const genCode = (
 
     const variableDeclare = []
     const args: string[] = []
-    stateParents.map(({ title, states }) => {
+    stateParents.forEach(({ title, states }) => {
       const transformedTitle = transformTitleToExp(title)
       variableDeclare.push(`const ${transformedTitle} = {`)
       args.push(stateTitleToVariable(title))

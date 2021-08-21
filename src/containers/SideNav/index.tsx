@@ -8,22 +8,35 @@ import {
 } from '@/slices/stateParents';
 
 import { useCallback, useState } from 'react';
-import { genStateParentId } from '@/utils';
+import { genStateParentId, isContainSpecialChar } from '@/utils';
 import { ListItemType } from '@/components/ListItem';
 import Tag from '@/components/Tag';
 import { ItemTitle as RawItemTitle } from '@/components/BlockInfo';
 
-import {TextInput, Button, ListItem} from '@/components';
-import { RootState } from '@/store';
+import {TextInput, ListItem} from '@/components';
 
 const Wrap = styled.div`
   padding: 16px;
+`
+
+export const SectionTitle = styled.div`
+  padding: 4px 4px;
+  margin-bottom: 16px;
+  font-weight: bold;
+  border-bottom: 1px solid #444;
 `
 
 const ItemTitle = styled(RawItemTitle)`
   &:hover {
     color: #fff;
   }
+`
+
+const TabHint = styled.div`
+  margin-top: 2px;
+  font-size: 11px;
+  color: #999;
+  /* font-style: italic; */
 `
 
 const StateParentWrap = styled.div<{ active: boolean }>`
@@ -61,7 +74,6 @@ const Cursor = styled.span`
 `;
 
 const InputForm = styled.div`
-  display: flex;
 `
 
 const StateList = styled.div`
@@ -87,9 +99,9 @@ const SideNav = () => {
   const allStateParent = useSelector(stateParentSelector.selectAll);
   const allStateParentMap = useSelector(stateParentSelector.selectEntities);
   const allNames = allStateParent.map(({ title }: any) => title);
+  const allNamesLower = allStateParent.map(({ title }: any) => title.toLowerCase());
   const allIds = allStateParent.map(({ stateParentId }: any) => stateParentId);
   const activeStateParentId = allIds[activeStateParentIdx]
-  console.log("🚀 ~ file: index.tsx ~ line 55 ~ SideNav ~ allIds", allIds)
   // const allStateParentIds = useSelector(stateParentSelector.);
 
   const removeState = useCallback((stateParentId: string, idxToRemove: number) => {
@@ -110,8 +122,13 @@ const SideNav = () => {
   }, [dispatch])
 
   const addStateParent = useCallback(() => {
-    if (allNames.includes(inputText)) {
-      return alert('Name should be unique')
+    if (allNamesLower.includes(inputText.toLowerCase())) {
+      alert('Name should be unique')
+      return 'invalid'
+    }
+    if (isContainSpecialChar(inputText)) {
+      alert('Name should not contain special character')
+      return 'invalid'
     }
     const id = genStateParentId()
     const action = stateParentAdded({
@@ -123,12 +140,17 @@ const SideNav = () => {
     dispatch(action)
     setActiveStateParentIdx(allIds.length);
     setInputMode(InputMode.StateAdd)
-  }, [dispatch, inputText])
+  }, [dispatch, inputText, allNamesLower, allIds.length])
 
   const addState = useCallback((id) => {
     const stateParent = allStateParentMap[activeStateParentId];
-    if (stateParent?.states.includes(inputText)) {
-      return alert('State should be unique')
+    if (stateParent?.states.map(s => s.toLowerCase()).includes(inputText.toLowerCase())) {
+      alert('State should be unique')
+      return 'invalid'
+    }
+    if (isContainSpecialChar(inputText)) {
+      alert('Name should not contain special character')
+      return 'invalid'
     }
     const action = stateParentUpdated({
       id,
@@ -143,8 +165,13 @@ const SideNav = () => {
     const i = idxToEdit;
     const stateParent = allStateParentMap[stateParentId];
     const states = stateParent?.states || []
-    if (states.includes(text)) {
-      return alert('State should be unique')
+    if (states.map(s => s.toLowerCase()).includes(text.toLowerCase())) {
+      alert('State should be unique')
+      return 'invalid'
+    }
+    if (isContainSpecialChar(text)) {
+      alert('Name should not contain special character')
+      return 'invalid'
     }
     const action = stateParentUpdated({
       id: stateParentId,
@@ -156,8 +183,13 @@ const SideNav = () => {
   }, [allStateParentMap, dispatch])
 
   const editStateParent = useCallback((stateParentId: string, text: string) => {
-    if (allNames.includes(text)) {
-      return alert('Name should be unique')
+    if (allNamesLower.includes(text.toLowerCase())) {
+      alert('Name should be unique')
+      return 'invalid'
+    }
+    if (isContainSpecialChar(text)) {
+      alert('Name should not contain special character')
+      return 'invalid'
     }
     const action = stateParentUpdated({
       id: stateParentId,
@@ -166,21 +198,24 @@ const SideNav = () => {
       }
     })
     dispatch(action)
-  }, [dispatch])
+  }, [dispatch, allNamesLower])
 
   const submit = useCallback(() => {
     if (!inputText) return
 
     if (inputMode === InputMode.StateParentAdd) {
-      addStateParent()
+      return addStateParent()
     } else if (inputMode === InputMode.StateAdd) {
-      addState(activeStateParentId)
+      return addState(activeStateParentId)
     }
   }, [inputText, inputMode, addStateParent, addState, activeStateParentId])
 
   return (
     <Wrap>
       {/* { inputMode } */}
+      <SectionTitle>
+        States
+      </SectionTitle>
       <InputForm>
         <TextInput
           hideCursor={
@@ -189,7 +224,7 @@ const SideNav = () => {
           placeholder={
             inputMode === InputMode.StateAdd
               ? `Input a state of "${allNames[activeStateParentIdx]}"`
-              : "Input a type... ex: UserStatus, PageStatus"
+              : "Input a state type... ex: UserStatus"
           }
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
@@ -202,11 +237,13 @@ const SideNav = () => {
           }}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
-              submit()
-              setInputText('')
+              if (submit() !== 'invalid') {
+                setInputText('')
+              }
             } else if (e.key === 'Escape') {
               setInputMode(DEFAULT_INPUT_MODE)
             } else if (e.key === 'Tab') {
+              if (!allIds.length) return;
               e.preventDefault();
               setInputMode(InputMode.StateAdd)
               if (inputMode !== InputMode.StateAdd) {
@@ -224,6 +261,11 @@ const SideNav = () => {
           }}
           type="text"
         />
+        {
+            <TabHint style={{ opacity: isInputFocus && allIds.length ? 1 : 0 }}>
+              Press "Tab" {inputMode === InputMode.StateAdd && `or "Esc"`} to switch input mode
+            </TabHint>
+        }
       </InputForm>
       {
         allStateParent.map(({ title, states, stateParentId }, i) => (

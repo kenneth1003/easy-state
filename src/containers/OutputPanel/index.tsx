@@ -8,11 +8,11 @@ import {
 } from '@/slices/stateOutputs';
 
 import { useCallback, useState } from 'react';
-import { genStateParentId } from '@/utils';
-import { ItemTitle } from '@/components/BlockInfo';
+import { genStateParentId, isContainSpecialChar } from '@/utils';
 
-import {TextInput, Button, ListItem, Tag} from '@/components';
+import {TextInput, ListItem, Tag} from '@/components';
 import { ListItemType } from '@/components/ListItem';
+import { SectionTitle } from '../SideNav';
 
 const Wrap = styled.div`
   padding: 16px;
@@ -26,10 +26,6 @@ const InputForm = styled.div`
 const OutputWrap = styled.div`
   display: flex;
   flex-wrap: wrap;
-  /* padding: 4px 8px;
-  border: 1px solid #555;
-  margin-bottom: 12px;
-  border-radius: 2px; */
 `
 
 const StateOutputPanel = () => {
@@ -38,6 +34,7 @@ const StateOutputPanel = () => {
   
   const allStateOutputs = useSelector(stateOutputSelector.selectAll);
   const allOutputNames = allStateOutputs.map(({ title }) => title)
+  const allOutputNamesLower = allStateOutputs.map(({ title }) => title.toLowerCase())
 
   const removeStateOutput = useCallback((stateOutputId: string) => {
     const action = stateOutputRemoveOne(stateOutputId)
@@ -45,8 +42,13 @@ const StateOutputPanel = () => {
   }, [dispatch])
 
   const addStateOutput = useCallback(() => {
-    if (allOutputNames.includes(inputText)) {
-      return alert('Name should be unique')
+    if (allOutputNamesLower.includes(inputText.toLowerCase())) {
+      alert('Name should be unique')
+      return 'invalid'
+    }
+    if (isContainSpecialChar(inputText)) {
+      alert('Name should not contain special character')
+      return 'invalid'
     }
     const id = genStateParentId()
     const action = stateOutputAdded({
@@ -55,11 +57,16 @@ const StateOutputPanel = () => {
       stateOutputId: id,
     })
     dispatch(action)
-  }, [dispatch, inputText])
+  }, [dispatch, inputText, allOutputNamesLower])
 
   const editStateOutput = useCallback((stateOutputId: string, text: string) => {
     if (allOutputNames.includes(text)) {
-      return alert('Name should be unique')
+      alert('Name should be unique')
+      return 'invalid'
+    }
+    if (isContainSpecialChar(text)) {
+      alert('Name should not contain special character')
+      return 'invalid'
     }
     const action = stateOutputUpdated({
       id: stateOutputId,
@@ -68,25 +75,27 @@ const StateOutputPanel = () => {
       }
     })
     dispatch(action)
-  }, [dispatch])
+  }, [dispatch, allOutputNames])
 
   const submit = useCallback(() => {
-      addStateOutput()
+      return addStateOutput()
   }, [addStateOutput])
 
   return (
     <Wrap>
       {/* <ItemTitle>YTESt</ItemTitle> */}
+      <SectionTitle>Outputs</SectionTitle>
       <InputForm>
         <TextInput
-          placeholder="Enter a output..."
+          placeholder="Enter a output... ex: LoginPage"
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               if (!inputText) return
-              submit()
-              setInputText('')
+              if (submit() !== 'invalid') {
+                setInputText('')
+              }
             }
           }}
           type="text"
@@ -96,19 +105,19 @@ const StateOutputPanel = () => {
       <OutputWrap>
       {
         allStateOutputs.map(({ title, stateOutputId }) => (
-            <ListItem
-              isSolidDelete
-              type={ListItemType.SubListItem}
-              title={title}
-              onDelete={ (e) => {
-                e.stopPropagation()
-                if (window.confirm('Are you sure to remove?')){
-                  removeStateOutput(stateOutputId)
-                }
-              }}
-              onSubmit={ (text: string) => editStateOutput(stateOutputId, text) }
-              renderer={(title) => <Tag style={{ marginRight: 8, marginBottom: 8 }}>{ title }</Tag>}
-            />
+          <ListItem
+            isSolidDelete
+            type={ListItemType.SubListItem}
+            title={title}
+            onDelete={ (e) => {
+              e.stopPropagation()
+              // if (window.confirm('Are you sure to remove?')){
+                removeStateOutput(stateOutputId)
+              // }
+            }}
+            onSubmit={ (text: string) => editStateOutput(stateOutputId, text) }
+            renderer={(title) => <Tag style={{ marginRight: 8, marginBottom: 8 }}>{ title }</Tag>}
+          />
         ))
       }      
       </OutputWrap>

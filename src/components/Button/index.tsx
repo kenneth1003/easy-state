@@ -8,11 +8,12 @@ const Wrap = styled.button<Props>`
   padding: 8px;
   outline: none;
   border-radius: 2px;
-  color: ${({ active, theme }) => active ? theme.main : ''};
+  color: ${({ active, theme }) => active ? theme.main : ''} !important;
   font-weight: ${({ active, theme }) => active ? 'bold' : ''};
   &:hover {
     cursor: pointer;
-    color: ${consumeTheme('main')};
+    /* color: ${consumeTheme('main')}; */
+    color: #fff;
   }
 `
 
@@ -27,12 +28,14 @@ interface Props extends React.ComponentPropsWithoutRef<'button'> {
 const Button = ({
   onClick,
   children,
-  active
+  active,
+  className
 }: Props) => {
   return (
     <Wrap
       onClick={onClick}
       active={active}
+      className={className}
     >
       { children }
     </Wrap>

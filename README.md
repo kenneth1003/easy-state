@@ -7,17 +7,11 @@
 - [v] gen code, gen table, gen test case
 - [v] Same name validation
 
-Input flow
-- Need Easy to understand input flow 
-  - switch between parent, state, output
 UI Fine Tune
-- [] Only Click Certain area active StateAdd
-- [] Active UI
-- [] Inline editing tag
-- [] Editor UI
-- [] Description of this APP
-
+- [] refine flow, should we keep the state
+- [] domain, release
 - [] GA
+
 
 
 

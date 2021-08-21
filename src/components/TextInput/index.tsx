@@ -13,10 +13,17 @@ const Wrap = styled.input<Props>`
   border: none;
   color: #fff;
   padding: 8px;
-  border-radius: 2px;
+  border-radius: 3px;
   ${({ hideCursor }) => hideCursor ? 'caret-color: transparent;' : ''}
   &::placeholder {
     color: ${consumeTheme('text3rd')};
+  }
+  border:1px solid #141417;
+  box-sizing: border-box;
+  &:focus {
+    outline: none;
+    /* border:1px solid ${consumeTheme('main')}; */
+    border:1px solid #ccc;
   }
 `
 

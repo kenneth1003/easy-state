@@ -23,12 +23,6 @@ const Delete = styled.div`
   }
 `
 
-const WidthRef = styled.div`
-  position: relative;
-  z-index: -1;
-  left: 9999px;
-`;
-
 const DeleteSolid = styled.div`
   cursor: pointer;
   position: absolute;
@@ -95,7 +89,6 @@ const ListItem = ({
   const [inputText, setInputText] = useState('');
   const [originalTitle, setOriginalTitle] = useState(title);
   const inputEl = useRef<HTMLInputElement>(null)
-  const widthEl = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     setOriginalTitle(title)
@@ -109,19 +102,16 @@ const ListItem = ({
     Promise.resolve().then(() => {
       inputEl.current?.focus()
     })
-  }, [originalTitle])
+  }, [originalTitle, onStartEdit])
 
   const cancelEdit = useCallback(() => {
     onEndEdit && onEndEdit()
     setIsEdit(false)
     setInputText(originalTitle)
-  }, [originalTitle])
-
-  console.log('widthEl.current?.offsetWidth' ,widthEl.current?.scrollWidth);
+  }, [originalTitle, onEndEdit])
 
   return (
     <Wrap>
-      {/* <Title onClick={startEdit}>{renderer(title)}</Title>  */}
         <Title
           onClick={startEdit}
         >
@@ -139,7 +129,6 @@ const ListItem = ({
                           width: '100%'
                         }
                     )
-                    // width: widthEl.current?.offsetWidth
                   }}
                   ref={inputEl}
                   placeholder=""
@@ -155,7 +144,6 @@ const ListItem = ({
                       cancelEdit()
                     } else if (e.key === 'Escape') {
                       cancelEdit()
-                      // setInputMode(DEFAULT_INPUT_MODE)
                     }
                   }}
                 />

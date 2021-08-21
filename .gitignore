@@ -10,6 +10,7 @@
 
 # production
 /build
+/easy-state
 
 # misc
 .DS_Store

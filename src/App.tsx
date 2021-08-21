@@ -1,7 +1,8 @@
 import './App.css';
 import { ThemeProvider } from 'styled-components';
-import { BrowserRouter, Route } from 'react-router-dom'
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
 import Home from '@/pages/home';
+import About from '@/pages/about';
 import { PersistGate } from 'redux-persist/integration/react'
 import { persistStore } from 'redux-persist'
 import store from '@/store';
@@ -16,15 +17,26 @@ function App() {
     <div className="App">
       <PersistGate loading={null} persistor={persistor}>
         <ThemeProvider theme={darkTheme}>
-          <BrowserRouter>
-            <Route
-              path="/"
-              component={Home}
-              exact
-            />
+          <BrowserRouter basename="easy-state">
+            <Switch>
+              <Route
+                path="/"
+                component={Home}
+                exact
+              />
+              <Route
+                path="/about"
+                component={About}
+                exact
+              />
+              <Route>
+                <Redirect to="/" />
+              </Route>
+            </Switch>
           </BrowserRouter>
         </ThemeProvider>
       </PersistGate>
+      {/* <Footer /> */}
     </div>
   );
 }

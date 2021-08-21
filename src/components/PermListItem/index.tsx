@@ -24,6 +24,20 @@ const RadioWrap = styled.div<{ active: boolean }>`
   }
 `
 
+const Upper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 8px;
+`
+
+const NumberLabel = styled.div`
+  margin-right: 10px;
+  font-size: 14px;
+  position: relative;
+  bottom: 4px;
+`
+
 interface Props {
   nth: number
   tags: string[]
@@ -45,18 +59,19 @@ const PermListItem = ({
   
   return (
     <Wrap>
-      <span>{nth}. </span>
-      {
-        tags.map((tag) => 
-          <Tag
-            style={{ marginRight: 8, marginBottom: 8 }}
-            isTextOnly
-          >
-            { tag }
-          </Tag>
-        )  
-      }
-      <br/>
+      <Upper>
+      <NumberLabel>{nth}. </NumberLabel>
+        {
+          tags.map((tag) => 
+            <Tag
+              style={{ marginRight: 8, marginBottom: 8 }}
+              isTextOnly
+            >
+              { tag }
+            </Tag>
+          )  
+        }
+      </Upper>
       {
         selectList.map((option) => (
           <RadioWrap
