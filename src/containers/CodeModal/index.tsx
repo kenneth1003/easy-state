@@ -152,14 +152,16 @@ const CodeModal = ({
     <ToolBar>
       {
         isStale &&
-        <RefreshButton onClick={() => {
+        <RefreshButton 
+          className="js-code-refresh-js"
+          onClick={() => {
           refreshCode()
           setIsStale(false)
         }}>
           Refresh JS
         </RefreshButton>
       }
-      <CopyButton onClick={() => copyTextToClipboard(code)}>
+      <CopyButton className="js-code-copy-js" onClick={() => copyTextToClipboard(code)}>
         Copy
       </CopyButton>
       {/* <Warning>Please double check if the behavior is expected.</Warning> */}

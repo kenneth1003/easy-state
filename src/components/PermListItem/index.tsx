@@ -75,6 +75,7 @@ const PermListItem = ({
       {
         selectList.map((option) => (
           <RadioWrap
+            className="js-select-output"
             active={selectMap[key] === option}
             onClick={() => onSelect(key, option)}
           >

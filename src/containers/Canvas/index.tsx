@@ -72,8 +72,8 @@ const Canvas = () => {
         You can modify the output mapping in the "Edit Output" tab, or copy "JS Code" and modify it yourself.
       </Description>
       <Tabs>
-        <Button active={uiMode === UIMode.Code} onClick={() => setUIMode(UIMode.Code)}>JS Code</Button>
-        <Button active={uiMode === UIMode.Combination} onClick={() => setUIMode(UIMode.Combination)}>Edit Output</Button>
+        <Button className="js-switch-js" active={uiMode === UIMode.Code} onClick={() => setUIMode(UIMode.Code)}>JS Code</Button>
+        <Button className="js-switch-edit-output" active={uiMode === UIMode.Combination} onClick={() => setUIMode(UIMode.Combination)}>Edit Output</Button>
       </Tabs>
       {
         uiMode === UIMode.Code
