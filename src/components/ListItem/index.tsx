@@ -26,8 +26,9 @@ const Delete = styled.div`
 const DeleteSolid = styled.div`
   cursor: pointer;
   position: absolute;
+  border-radius: 1px;
   right: 12px;
-  top: 1px;
+  top: 0;
   font-size: 16px;
   padding: 0 4px;
   font-weight: bold;

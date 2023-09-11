@@ -97,12 +97,14 @@ const Home = () => {
         <Description>
           <Link to="/about">About Page</Link>
           <SEOH1>A tool to create state mapping JS code</SEOH1>
-          The generated code is based on the concept of <SEOH2><a href="https://refactoring.guru/design-patterns/state" target="_blank" rel="noreferrer">state pattern</a></SEOH2> and <SEOH2><a href="https://stackoverflow.com/questions/105311/what-are-table-driven-methods" target="_blank" rel="noreferrer">table driven methods</a></SEOH2>. The only steps:
+          The generated code is based on the concept of <SEOH2><a href="https://refactoring.guru/design-patterns/state" target="_blank" rel="noreferrer">state pattern</a></SEOH2> and <SEOH2><a href="https://stackoverflow.com/questions/105311/what-are-table-driven-methods" target="_blank" rel="noreferrer">table driven methods</a></SEOH2>. Steps:
         </Description>
         {/* <span>Steps:</span> */}
         <StepList>
-          <li>Input possible states and outputs</li>
-          <li>Generate Code</li>
+          <li>Input possible <strong>States</strong> and <strong>Outputs</strong> of your application</li>
+          <li>Update the output of given the state combinations under the <strong>Select Output</strong> Tab</li>
+          <li>Code will be generated under the <strong>JS Code</strong> Tab</li>
+          <li>Copy it as a base and modify details to fit your application</li>
         </StepList>
       </DescBlock>
       <Wrap>

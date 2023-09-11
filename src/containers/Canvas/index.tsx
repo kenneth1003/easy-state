@@ -34,6 +34,11 @@ const Tabs = styled.div`
   margin-bottom: 12px;
 `
 
+const CombinationDesc = styled.p`
+color: #ccc;
+padding-left: 16px;
+`
+
 
 enum UIMode {
   Code,
@@ -69,11 +74,11 @@ const Canvas = () => {
   return (
     <Wrap>
       <Description>
-        You can modify the output mapping in the "Edit Output" tab, or copy "JS Code" and modify it yourself.
+        Please select output mapping in the "Select Output" tab, or copy "JS Code" and modify it yourself.
       </Description>
       <Tabs>
         <Button className="js-switch-js" active={uiMode === UIMode.Code} onClick={() => setUIMode(UIMode.Code)}>JS Code</Button>
-        <Button className="js-switch-edit-output" active={uiMode === UIMode.Combination} onClick={() => setUIMode(UIMode.Combination)}>Edit Output</Button>
+        <Button className="js-switch-edit-output" active={uiMode === UIMode.Combination} onClick={() => setUIMode(UIMode.Combination)}>Select Output</Button>
       </Tabs>
       {
         uiMode === UIMode.Code
@@ -87,8 +92,9 @@ const Canvas = () => {
         uiMode === UIMode.Combination
         ? <>
           <ItemTitle style={{ marginLeft: 8 }}>
-            Combinations: { allCombs.length }
+            Combinations: { allCombs.length }<br />
           </ItemTitle>
+          <CombinationDesc>Select the desired output given the state combination</CombinationDesc>
           {
             allCombs.map((comb, idx) => (
               <PermListItem
